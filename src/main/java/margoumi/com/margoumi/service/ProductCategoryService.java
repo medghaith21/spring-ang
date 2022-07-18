@@ -1,12 +1,13 @@
-package service;
+package margoumi.com.margoumi.service;
 
-import models.CategoryProduct;
+import margoumi.com.margoumi.models.CategoryProduct;
 import org.springframework.beans.factory.annotation.Autowired;
-import repository.CategoryProductRepository;
+import org.springframework.stereotype.Service;
+import margoumi.com.margoumi.repository.CategoryProductRepository;
 
 import java.util.List;
-import java.util.Optional;
 
+@Service
 public class ProductCategoryService {
     private final CategoryProductRepository categoryProductRepository;
 

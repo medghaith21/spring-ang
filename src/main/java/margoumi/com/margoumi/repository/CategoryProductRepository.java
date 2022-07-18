@@ -1,13 +1,11 @@
-package repository;
+package margoumi.com.margoumi.repository;
 
-import models.CategoryProduct;
-import models.Product;
+import margoumi.com.margoumi.models.CategoryProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
+@org.springframework.stereotype.Repository
 public interface CategoryProductRepository extends JpaRepository<CategoryProduct,Long> {
     Optional<CategoryProduct> findCategoryById(Long id);
 }

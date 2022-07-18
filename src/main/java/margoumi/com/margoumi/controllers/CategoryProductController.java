@@ -1,9 +1,8 @@
-package controllers;
+package margoumi.com.margoumi.controllers;
 
-import models.CategoryProduct;
+import margoumi.com.margoumi.models.CategoryProduct;
 import org.springframework.web.bind.annotation.*;
-import service.ProductCategoryService;
-import service.ProductService;
+import margoumi.com.margoumi.service.ProductCategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -12,7 +11,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/category")
 public class CategoryProductController {
-    private final ProductCategoryService productCategoryService;
+
+    private static ProductCategoryService productCategoryService;
 
     public CategoryProductController(ProductCategoryService productCategoryService) {
         this.productCategoryService = productCategoryService;

@@ -1,4 +1,4 @@
-package models;
+package margoumi.com.margoumi.models;
 
 import lombok.Data;
 

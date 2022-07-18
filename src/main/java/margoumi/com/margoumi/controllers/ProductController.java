@@ -1,13 +1,12 @@
-package controllers;
+package margoumi.com.margoumi.controllers;
 
-import models.Product;
+import margoumi.com.margoumi.models.Product;
 import org.springframework.web.bind.annotation.*;
-import service.ProductService;
+import margoumi.com.margoumi.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/")

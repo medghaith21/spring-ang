@@ -1,12 +1,11 @@
-package service;
+package margoumi.com.margoumi.service;
 
-import models.Product;
+import margoumi.com.margoumi.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import repository.ProductRepository;
+import margoumi.com.margoumi.repository.ProductRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductService {

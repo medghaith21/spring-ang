@@ -1,10 +1,9 @@
-package models;
+package margoumi.com.margoumi.models;
 
 
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

@@ -1,6 +1,6 @@
-package repository;
+package margoumi.com.margoumi.repository;
 
-import models.Product;
+import margoumi.com.margoumi.models.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
