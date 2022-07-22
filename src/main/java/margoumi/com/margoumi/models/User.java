@@ -1,6 +1,7 @@
 package margoumi.com.margoumi.models;
 
 import lombok.Data;
+import org.springframework.context.annotation.Lazy;
 
 import javax.persistence.*;
 
@@ -30,4 +31,12 @@ public class User {
 
     @Column(name = "adress")
     private String adress ;
+
+    @Enumerated(EnumType.STRING)
+    @Lazy
+    @Column(name = "role")
+    private Role role;
+
+    @Transient
+    private String token;
 }

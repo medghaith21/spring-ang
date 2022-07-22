@@ -1,6 +1,8 @@
 package margoumi.com.margoumi.models;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -46,6 +48,7 @@ public class Product {
     @UpdateTimestamp
     private Date updatedDate;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "category_id")
     private CategoryProduct category ;

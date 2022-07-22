@@ -1,5 +1,7 @@
 package margoumi.com.margoumi.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,6 +18,8 @@ public class CategoryProduct {
 
     @Column(name = "name")
     private String name;
+
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
     private Set<Product> products;
 }

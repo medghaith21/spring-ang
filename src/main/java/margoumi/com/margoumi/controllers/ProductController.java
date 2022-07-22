@@ -9,17 +9,22 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/product")
+@CrossOrigin("http://localhost:4200")
 public class ProductController {
     private final ProductService productService;
 
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
+
     @GetMapping("/products")
-    public List<Product> getProducts(){
-        return productService.findAllProduct();
+    public ResponseEntity<List<Product>> getAllProducts () {
+        List<Product> products = productService.findAllProduct();
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
+
+
 
     @PostMapping("/addproduct")
     public Product newProduct (@RequestBody Product product){
