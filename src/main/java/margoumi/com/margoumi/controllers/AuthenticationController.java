@@ -20,7 +20,10 @@ public class AuthenticationController {
     private UserService userService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<User> signUp(@RequestBody User user){
+    public ResponseEntity<?> signUp(@RequestBody User user){
+        if (userService.findByEmail(user.getEmail()).isPresent()){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
         User Suser = userService.saveUser(user);
         return new ResponseEntity<>(Suser, HttpStatus.CREATED);
     }
