@@ -24,12 +24,12 @@ public class ProductService {
                 .orElseThrow(() -> new Exception("User by id " + id + " was not found"));
     }
 
-    public Product addProduct(Product product){
-        return productRepository.save(product);
+    public long addProduct(Product product){
+        return productRepository.save(product).getId();
     }
 
-    public Product editProduct(Product product){
-        return  productRepository.save(product);
+    public long editProduct(Product product){
+        return  productRepository.save(product).getId();
     }
 
     public void deleteProduct(Long id){
