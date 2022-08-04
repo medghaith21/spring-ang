@@ -58,6 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 antMatchers("/api/checkout/**").permitAll()
                 .antMatchers("/api/checkout/purchase").permitAll()
                 .antMatchers("/api/internal/**").hasRole(Role.SYSTEM_MANAGER.name())
+                .antMatchers("/api/orders/search/findByCustomerEmailOrderByDateCreatedDesc/**").permitAll()
                 .anyRequest().authenticated();
         http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(internalApiAuthenticationFilter(), JwtAuthorizationFilter.class);

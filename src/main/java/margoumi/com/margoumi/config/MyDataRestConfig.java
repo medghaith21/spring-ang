@@ -1,8 +1,10 @@
 package margoumi.com.margoumi.config;
 
 import margoumi.com.margoumi.models.Country;
+import margoumi.com.margoumi.models.Order;
 import margoumi.com.margoumi.models.State;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -18,6 +20,9 @@ import java.util.Set;
 @Configuration
 public class MyDataRestConfig implements RepositoryRestConfigurer {
 
+    @Value("${allowed.origins}")
+    private String[] theAllowedOrigins;
+
     private EntityManager entityManager;
 
     @Autowired
@@ -32,6 +37,13 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
         // disable HTTP methods for ProductCategory: PUT, POST and DELETE
         disableHttpMethods(Country.class, config, theUnsupportedActions);
         disableHttpMethods(State.class, config, theUnsupportedActions);
+        disableHttpMethods(Order.class, config, theUnsupportedActions);
+
+        // call an internal helper method
+        exposeIds(config);
+
+        // configure cors mapping
+        cors.addMapping(config.getBasePath() + "/**").allowedOrigins(theAllowedOrigins);
 
         // call an internal helper method
         exposeIds(config);
