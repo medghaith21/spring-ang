@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/authentication")
+@CrossOrigin(origins = "http://localhost:4200")
 public class AuthenticationController {
 
     @Autowired
@@ -31,6 +32,12 @@ public class AuthenticationController {
     @PostMapping("/sign-in")
     public ResponseEntity<User> signIn(@RequestBody User user){
         User Suser = authenticationService.SignInAndReturnJWT(user);
+        return new ResponseEntity<>(Suser, HttpStatus.OK);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<User> UpdateUser(@RequestBody User user) throws Exception{
+        User Suser = userService.update(user);
         return new ResponseEntity<>(Suser, HttpStatus.OK);
     }
 }

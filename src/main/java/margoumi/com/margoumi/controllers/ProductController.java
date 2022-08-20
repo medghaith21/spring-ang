@@ -14,6 +14,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import margoumi.com.margoumi.service.ProductService;
 import org.springframework.http.HttpStatus;
@@ -79,7 +80,7 @@ public class ProductController implements ServletContextAware {
     }
 
     @PostMapping("/addproduct")
-    public long  newProduct(@RequestParam("files") MultipartFile[] files,
+    public long  newProduct(@RequestParam("files") MultipartFile[] files, @RequestParam("file") MultipartFile image,
                             @RequestParam("product") String product) throws JsonParseException, JsonMappingException , Exception {
         Product arti = new ObjectMapper().readValue(product, Product.class);
         boolean isExit = new File(context.getRealPath("/Imagess/")).exists();
@@ -109,6 +110,20 @@ public class ProductController implements ServletContextAware {
             photos.add(fileinfo);
         }
 
+        String fileName = image.getOriginalFilename();
+        String newFileName = FilenameUtils.getBaseName(fileName)+"."+FilenameUtils.getExtension(fileName);
+        File serverFile = new File (context.getRealPath("/Imagess/"+File.separator+newFileName));
+        try
+        {
+            System.out.println("Image");
+            FileUtils.writeByteArrayToFile(serverFile,image.getBytes());
+
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("Save Article 333333.............");
+        arti.setImage(newFileName);
+
         System.out.println("Save Article 333333.............");
         // arti.setProducts(photos);
         return productService.addProduct(arti);
@@ -120,10 +135,12 @@ public class ProductController implements ServletContextAware {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/update")
-    public long updateEmployee(@RequestParam("file") MultipartFile file,
+
+    @PutMapping("/update/{id}")
+    public long updateEmployee(@PathVariable("id") Long id, @RequestParam("file") MultipartFile [] files,
                                                   @RequestParam("product") String product) throws JsonParseException, JsonMappingException , Exception  {
         Product arti = new ObjectMapper().readValue(product, Product.class);
+        Product p = productService.findProdById(id);
         boolean isExit = new File(context.getRealPath("/Imagess/")).exists();
         if (!isExit)
         {
@@ -131,20 +148,40 @@ public class ProductController implements ServletContextAware {
             System.out.println("mk dir Imagess.............");
         }
         System.out.println("Save Article  22222.............");
-        String filename = file.getOriginalFilename();
-        String newFileName = FilenameUtils.getBaseName(filename)+"."+FilenameUtils.getExtension(filename);
-        File serverFile = new File (context.getRealPath("/Imagess/"+File.separator+newFileName));
-        try
-        {
-            System.out.println("Image");
-            FileUtils.writeByteArrayToFile(serverFile,file.getBytes());
+        Set<FileInfo> photos = new HashSet<>();
+        for (MultipartFile file : files) {
+            FileInfo fileinfo = new FileInfo();
+            String filename = file.getOriginalFilename();
+            String newFileName = FilenameUtils.getBaseName(filename)+"."+FilenameUtils.getExtension(filename);
+            File serverFile = new File (context.getRealPath("/Imagess/"+File.separator+newFileName));
+            try
+            {
+                System.out.println("Image");
+                FileUtils.writeByteArrayToFile(serverFile,file.getBytes());
 
-        }catch(Exception e) {
-            e.printStackTrace();
+            }catch(Exception e) {
+                e.printStackTrace();
+            }
+            fileinfo.setName(newFileName);
+            fileinfo.setImage(arti);
+            imageRepository.save(fileinfo);
+            photos.add(fileinfo);
         }
+
         System.out.println("Save Article 333333.............");
-        // arti.setImage(newFileName);
-        return productService.editProduct(arti);
+        // arti.setProducts(photos);
+        if(p.getId() > -1) {
+            p.setName(arti.getName());
+            p.setDescription(arti.getDescription());
+            p.setNprix(arti.getNprix());
+            p.setGprix(arti.getGprix());
+            p.setCategory(arti.getCategory());
+            p.setQuantity(arti.getQuantity());
+            productService.deleteProduct(arti.getId());
+            return p.getId();
+        } else {
+            return arti.getId();
+        }
     }
 
     @GetMapping("/find/{id}")
@@ -153,7 +190,7 @@ public class ProductController implements ServletContextAware {
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-    @GetMapping(path="/Imgarticles/{id}")
+    @GetMapping(path="/Img/{id}")
     public List<byte[]> getPhoto(@PathVariable("id") Long id) throws Exception{
         ArrayList<FileInfo> files = new ArrayList<FileInfo>();
         Product product = productService.findProdById(id);
@@ -183,10 +220,22 @@ public class ProductController implements ServletContextAware {
         return Files.readAllBytes(Paths.get(context.getRealPath("/Imagess/")+Article.getName()));
     }
 
+    @GetMapping(path="/Imgarticles/{id}")
+    public byte[] getProductImage(@PathVariable("id") Long id) throws Exception{
+        Product Article   =productService.findProdById(id);
+        return Files.readAllBytes(Paths.get(context.getRealPath("/Imagess/")+Article.getImage()));
+    }
+
     @GetMapping("/search/findByCategoryId?id={id}")
     public ResponseEntity<Page<Product>> getAllProducts (@PathVariable("id") Long id, Pageable pageable) {
         Page<Product> products = productRepository.findByCategoryId(id,pageable);
         return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+    @GetMapping ("/add-etoile/{produit-id}/{client-id}/{rev}")
+    @ResponseBody
+    public void moyEtoile(@PathVariable("produit-id") Long produitId,@PathVariable("client-id") Long clientId,@PathVariable("rev") Double rev ) throws Exception{
+        productService.calculeEtoile(rev, produitId, clientId);
     }
 
 }

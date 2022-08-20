@@ -3,15 +3,14 @@ package margoumi.com.margoumi.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 
 @Entity
@@ -43,6 +42,9 @@ public class Product {
     @Column(name = "quantity")
     private int quantity;
 
+    @Column(name = "image")
+    private String image;
+
     @Column(name = "create_date")
     @CreationTimestamp
     private Date createdDate;
@@ -61,4 +63,16 @@ public class Product {
     private Set<FileInfo> products;
 
 
+    @JsonManagedReference(value="prodcom")
+    @OneToMany(cascade=CascadeType.PERSIST,mappedBy = "produit",fetch=FetchType.LAZY)
+    private List<Commentaire> commentaire;
+
+    private Double etoile;
+    @ElementCollection
+    private Map<Long, Double> clientEtoile;
+
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(name = "WISHLIST", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "client_id"))
+    private Set<User> whoWhishesThisProduct;
 }

@@ -45,6 +45,9 @@ public class User {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private Set<Order> orders = new HashSet<>();
 
+    @ManyToMany(mappedBy = "whoWhishesThisProduct")
+    public Set<Product> productsWished;
+
     public void add(Order order) {
 
         if (order != null) {

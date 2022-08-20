@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.Set;
@@ -38,8 +39,8 @@ public class JwtProvider implements IJwtProvider{
     }
 
     @Override
-    public Authentication getAuthentication(HttpServletRequest request){
-        Claims claims = extractClaims(request);
+    public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response){
+        Claims claims = extractClaims(request, response);
         if(claims == null) {
             return null;
         }
@@ -55,12 +56,17 @@ public class JwtProvider implements IJwtProvider{
         if (username ==null){
             return null;
         }
+
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+        response.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
     return new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
     }
 
     @Override
-    public boolean validateToken(HttpServletRequest request){
-        Claims claims = extractClaims(request);
+    public boolean validateToken(HttpServletRequest request, HttpServletResponse response){
+        Claims claims = extractClaims(request, response);
         if(claims == null) {
             return false;
         }
@@ -70,11 +76,48 @@ public class JwtProvider implements IJwtProvider{
         return true;
     }
 
-    private Claims extractClaims(HttpServletRequest request){
+    private Claims extractClaims(HttpServletRequest request, HttpServletResponse response){
         String token = SecurityUtils.extractAuthTokenFromRequest(request);
         if (token == null) {
             return null;
         }
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+        response.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
         return Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token).getBody();
+
+    }
+    public String getEmail(String token) {
+
+        Claims claims = getClaims(token);
+
+        if(claims != null) {
+            return claims.getSubject();
+        }
+        return null;
+    }
+    private Claims getClaims(String token) {
+        try {
+            return Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token).getBody();
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    public boolean isTokenValid(String token) {
+        Claims claims = getClaims(token);
+
+        if(claims != null) {
+            String email = claims.getSubject();
+            Date expirationDate = claims.getExpiration();
+            Date now = new Date(System.currentTimeMillis());
+
+            if(email != null && expirationDate != null && now.before(expirationDate)) {
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 }
